@@ -1,5 +1,6 @@
 package com.crud.tasks.service;
 
+import com.crud.tasks.controller.TaskNotFoundException;
 import com.crud.tasks.domain.Task;
 import com.crud.tasks.domain.TaskDto;
 import com.crud.tasks.repository.TaskRepository;
@@ -14,16 +15,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DbService {
 
-    private final TaskRepository repository;
-
+    @Autowired
+    private TaskRepository repository;
 
 
     public List<Task> getAllTasks() {
+
         return repository.findAll();
     }
 
-    private Optional<Task>getSingleTask(final long taskId) {
+    public Optional<Task> getSingleTask(final Long id) {
+        return repository.findById(id);
+    }
 
-        return repository.findById(taskId);
+    public Task saveTask(final Task task) {
+
+        return repository.save(task);
     }
 }
