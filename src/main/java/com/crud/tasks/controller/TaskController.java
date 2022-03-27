@@ -31,7 +31,7 @@ public class TaskController {
         this.taskMapper = taskMapper;
     }
 
-    @GetMapping("/v1/tasks")
+    @GetMapping
     public ResponseEntity <List<TaskDto>>getTasks() {
         List<Task>tasks = service.getAllTasks();
         return ResponseEntity.ok(taskMapper.mapToTaskDtoList(tasks));
@@ -43,8 +43,9 @@ public class TaskController {
     }
 
     @DeleteMapping(value ={"taskId"})
-    public ResponseEntity<TaskDto> deleteTask(@RequestBody long taskId) throws  TaskNotFoundException {
-        return ResponseEntity.ok(taskMapper.mapToTaskDto(service.getSingleTask(taskId)));
+    public ResponseEntity<Void> deleteTask(@RequestBody long taskId)  {
+        service.deleteTask(taskId);
+       return ResponseEntity.ok().build();
 
 
     }
