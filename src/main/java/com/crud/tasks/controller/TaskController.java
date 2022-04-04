@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/v1/tasks")
 
@@ -37,17 +37,15 @@ public class TaskController {
         return ResponseEntity.ok(taskMapper.mapToTaskDtoList(tasks));
     }
 
-    @GetMapping(value = {"taskId"})
+    @GetMapping(value = "{taskId}")
     public ResponseEntity<TaskDto> getSingleTask(@PathVariable Long taskId) throws TaskNotFoundException {
         return ResponseEntity.ok(taskMapper.mapToTaskDto(service.getSingleTask(taskId)));
     }
 
-    @DeleteMapping(value ={"taskId"})
-    public ResponseEntity<Void> deleteTask(@RequestBody long taskId)  {
+    @DeleteMapping(value = "{taskId}")
+    public ResponseEntity<Void> deleteTask(@PathVariable long taskId)  {
         service.deleteTask(taskId);
        return ResponseEntity.ok().build();
-
-
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
