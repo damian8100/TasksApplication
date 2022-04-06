@@ -5,7 +5,7 @@ echo GRADLEW BUILD has errors – breaking work
 goto fail
 
 :rename
-start firefox [url = http://localhost:8080/crud/v1/tasks]http://localhost:8080/crud/v1/tasks[/url]
+start firefox http://localhost:8080/crud/v1/tasks
 goto end
 
 :fail
