@@ -1,10 +1,11 @@
 package com.crud.tasks.trello.client;
 
-import com.crud.tasks.domain.Badges;
-import com.crud.tasks.domain.CreatedTrelloCard;
-import com.crud.tasks.domain.TrelloBoardDto;
-import com.crud.tasks.domain.TrelloCardDto;
+import com.crud.tasks.domain.*;
+import com.crud.tasks.mapper.TrelloMapper;
+import com.crud.tasks.service.TrelloService;
 import com.crud.tasks.trello.config.TrelloConfig;
+import com.crud.tasks.trello.facade.TrelloFacade;
+import com.crud.tasks.trello.validator.TrelloValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +18,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,11 +29,26 @@ class TrelloClientTest {
     @InjectMocks
     private TrelloClient trelloClient;
 
+    @InjectMocks
+    private TrelloFacade trelloFacade;
+
+    @Mock
+    private TrelloMapper trelloMapper;
+
+    @Mock
+    private TrelloService trelloService;
+
+    @Mock
+    private TrelloListDto trelloListDto;
+
     @Mock
     private RestTemplate restTemplate;
 
     @Mock
     private TrelloConfig trelloConfig;
+
+    @Mock
+    private TrelloValidator trelloValidator;
 
     @Test
     public void shouldFetchTrelloBoards() throws URISyntaxException {
@@ -71,17 +89,17 @@ class TrelloClientTest {
 
         URI uri = new URI("http://test.com/cards?key=test&token=test&name=test%20task&desc=Test%20Description&pos=top&idList=test_id");
 
-        CreatedTrelloCard createdTrelloCard = new CreatedTrelloCard(
+        CreatedTrelloCardDto createdTrelloCardDto = new CreatedTrelloCardDto(
                 "1",
                 "test task",
                 "http://test.com",
                 new Badges()
 
         );
-        when(restTemplate.postForObject(uri, null, CreatedTrelloCard.class)).thenReturn(createdTrelloCard);
+        when(restTemplate.postForObject(uri, null, CreatedTrelloCardDto.class)).thenReturn(createdTrelloCardDto);
 
         // When
-        CreatedTrelloCard newCard = trelloClient.createNewCard(trelloCardDto);
+        CreatedTrelloCardDto newCard = trelloClient.createNewCard(trelloCardDto);
 
         //Then
         assertEquals("1", newCard.getId());
@@ -109,6 +127,36 @@ class TrelloClientTest {
         //Then
 
         assertEquals(new ArrayList<>(),nullBoard);
+
+    }
+    @Test
+    public void mapperTest() {
+
+        // Given
+        List<TrelloListDto> trelloListDtos = new ArrayList<>();
+        trelloListDtos.add(new TrelloListDto());
+
+        List<TrelloBoardDto> trelloBoardDtos = new ArrayList<>();
+        trelloBoardDtos.add(new TrelloBoardDto("test","1",trelloListDtos));
+
+        List<TrelloList>mapperTrelloList = new ArrayList<>();
+        mapperTrelloList.add(new TrelloList("1","test", true));
+
+        List<TrelloBoard>mapperTrelloBoard = new ArrayList<>();
+        mapperTrelloBoard.add(new TrelloBoard("1","test",mapperTrelloList));
+
+        when(trelloService.fetchTrelloBoards()).thenReturn(trelloBoardDtos);
+        when(trelloMapper.mapToBoards(trelloBoardDtos)).thenReturn(mapperTrelloBoard);
+        when(trelloMapper.mapToBoardsDto(anyList())).thenReturn(trelloBoardDtos);
+        when(trelloValidator.validateTrelloBoards(mapperTrelloBoard)).thenReturn(mapperTrelloBoard);
+        // Then
+
+        List<TrelloBoardDto> trelloBoardDtos1 = trelloFacade.fetchTrelloBoards();
+
+        //then
+
+        assertNotNull(trelloBoardDtos1);
+        assertEquals(1, trelloBoardDtos1.size());
 
     }
 }

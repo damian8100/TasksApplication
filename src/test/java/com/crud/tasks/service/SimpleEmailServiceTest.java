@@ -39,6 +39,6 @@ public void schuldSendEmail() {
     simpleEmailService.send(mail);
 
     //then
-   verify(javaMailSender,times(1)).send(any(SimpleEmailService.class));
+    verify(javaMailSender,times(1)).send(any(SimpleMailMessage.class));
 
 }}

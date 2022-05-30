@@ -33,6 +33,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
 	testCompileOnly 'org.projectlombok:lombok:1.18.22'
+	testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '4.6.0'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
 	//providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
